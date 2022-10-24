@@ -3,27 +3,36 @@ package main
 import (
 	"fmt"
 	"math"
-	"os"
-	"strconv"
-	"strings"
 )
 
+/**
+Input
+The first line contains an integer n (1 ≤ n ≤ 200 000) — the number of Mike's city intersection.
+
+The second line contains n integers a1, a2, ..., an (i ≤ ai ≤ n , , describing shortcuts of Mike's city,
+allowing to walk from intersection i to intersection ai using only 1 unit of energy.
+Please note that the shortcuts don't allow walking in opposite directions (from ai to i).
+
+Output
+In the only line print n integers m1, m2, ..., mn,
+where mi denotes the least amount of total energy required to walk from intersection 1 to intersection i.
+*/
 func main() {
-    argsWithoutProg := os.Args[1:]
-	n, err := strconv.Atoi(argsWithoutProg[0])
-	if err != nil {
-		fmt.Println(err)
-	}
-	shortcutsStrArr := strings.Split(argsWithoutProg[1], " ")
-	shortcuts := make([]int, 0)
-	for _, iStr := range(shortcutsStrArr) {
-		i, err := strconv.Atoi(iStr)
-		if err != nil {
-			fmt.Println(err)
+	fmt.Println(Test(3, []int{2, 2, 3}, []int{0, 1, 2}))
+	fmt.Println(Test(5, []int{1, 2, 3, 4, 5}, []int{0, 1, 2, 3, 4}))
+	fmt.Println(Test(7, []int{4, 4, 4, 4, 7, 7, 7}, []int{0, 1, 2, 1, 2, 3, 3}))
+	fmt.Println(Test(7, []int{3, 1, 5, 6, 7, 7, 7}, []int{0, 1, 2, 1, 2, 3, 3}))
+}
+
+func Test(n int, shortcuts []int, expected []int) bool {
+	actual := ShortestPathTree(1, n, shortcuts)
+	for i:=0;i<n;i++ {
+		if actual[i] != expected[i] {
+			fmt.Println(actual, expected)
+			return false
 		}
-		shortcuts = append(shortcuts, i)
 	}
-	fmt.Println(strings.Trim(fmt.Sprint(ShortestPathTree(1, n, shortcuts)), "[]"))
+	return true
 }
 
 // Assumes start-1 < shortcuts length, expects start in [1, n]
@@ -45,6 +54,7 @@ func ShortestPathTree(start int, n int, shortcuts []int) []int {
 	}
 
 	queue := make([]int, 0)
+	// Push to the queue
 	queue = append(queue, start)
 
 	for len(queue) > 0 {
